@@ -58,19 +58,19 @@ namespace Mastermind
             this.flpGuesses = new System.Windows.Forms.FlowLayoutPanel();
             this.btnHelp = new System.Windows.Forms.Button();
             this.panelSettings = new System.Windows.Forms.Panel();
-            this.lblSettings = new System.Windows.Forms.Label();
-            this.panelDebug = new System.Windows.Forms.Panel();
             this.cbDuplicates = new System.Windows.Forms.CheckBox();
-            this.pbSettings = new System.Windows.Forms.PictureBox();
+            this.lblSettings = new System.Windows.Forms.Label();
             this.pbLogo = new System.Windows.Forms.PictureBox();
+            this.panelDebug = new System.Windows.Forms.Panel();
+            this.pbSettings = new System.Windows.Forms.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.nudCodeLength)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudAttempts)).BeginInit();
             this.tlpColours.SuspendLayout();
             this.tlpGuesses.SuspendLayout();
             this.panelSettings.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pbLogo)).BeginInit();
             this.panelDebug.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbSettings)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbLogo)).BeginInit();
             this.SuspendLayout();
             // 
             // lblAnswer
@@ -233,7 +233,6 @@ namespace Mastermind
             this.lblSeparator.Size = new System.Drawing.Size(361, 54);
             this.lblSeparator.TabIndex = 32;
             this.lblSeparator.Text = "_____________";
-            this.lblSeparator.Click += new System.EventHandler(this.lblSeparator_Click);
             // 
             // lblAttemptsDisplay
             // 
@@ -259,6 +258,7 @@ namespace Mastermind
             this.lblTimer.Size = new System.Drawing.Size(33, 13);
             this.lblTimer.TabIndex = 34;
             this.lblTimer.Text = "Timer";
+            this.lblTimer.Visible = false;
             this.lblTimer.Click += new System.EventHandler(this.lblTimer_Click);
             // 
             // lblHint1
@@ -334,7 +334,6 @@ namespace Mastermind
             this.tlpGuesses.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tlpGuesses.Size = new System.Drawing.Size(322, 37);
             this.tlpGuesses.TabIndex = 86;
-            this.tlpGuesses.Paint += new System.Windows.Forms.PaintEventHandler(this.tlpGuesses_Paint);
             // 
             // flpGuesses
             // 
@@ -350,12 +349,16 @@ namespace Mastermind
             // 
             // btnHelp
             // 
-            this.btnHelp.Location = new System.Drawing.Point(70, 278);
+            this.btnHelp.BackColor = System.Drawing.SystemColors.ActiveBorder;
+            this.btnHelp.FlatAppearance.BorderSize = 0;
+            this.btnHelp.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnHelp.ForeColor = System.Drawing.Color.White;
+            this.btnHelp.Location = new System.Drawing.Point(65, 288);
             this.btnHelp.Name = "btnHelp";
-            this.btnHelp.Size = new System.Drawing.Size(45, 20);
+            this.btnHelp.Size = new System.Drawing.Size(59, 21);
             this.btnHelp.TabIndex = 87;
-            this.btnHelp.Text = "HELP";
-            this.btnHelp.UseVisualStyleBackColor = true;
+            this.btnHelp.Text = "Help";
+            this.btnHelp.UseVisualStyleBackColor = false;
             this.btnHelp.Click += new System.EventHandler(this.btnHelp_Click);
             // 
             // panelSettings
@@ -378,29 +381,6 @@ namespace Mastermind
             this.panelSettings.TabIndex = 89;
             this.panelSettings.Visible = false;
             // 
-            // lblSettings
-            // 
-            this.lblSettings.AutoSize = true;
-            this.lblSettings.Font = new System.Drawing.Font("Georgia", 15F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblSettings.ForeColor = System.Drawing.Color.White;
-            this.lblSettings.Location = new System.Drawing.Point(49, 5);
-            this.lblSettings.Name = "lblSettings";
-            this.lblSettings.Size = new System.Drawing.Size(93, 24);
-            this.lblSettings.TabIndex = 89;
-            this.lblSettings.Text = "Settings";
-            // 
-            // panelDebug
-            // 
-            this.panelDebug.BackColor = System.Drawing.Color.Transparent;
-            this.panelDebug.Controls.Add(this.lblAnswer);
-            this.panelDebug.Controls.Add(this.tbDebug);
-            this.panelDebug.Controls.Add(this.btnDebugClear);
-            this.panelDebug.Location = new System.Drawing.Point(0, 405);
-            this.panelDebug.Name = "panelDebug";
-            this.panelDebug.Size = new System.Drawing.Size(519, 297);
-            this.panelDebug.TabIndex = 90;
-            this.panelDebug.Visible = false;
-            // 
             // cbDuplicates
             // 
             this.cbDuplicates.AutoSize = true;
@@ -416,6 +396,39 @@ namespace Mastermind
             this.cbDuplicates.UseVisualStyleBackColor = false;
             this.cbDuplicates.CheckedChanged += new System.EventHandler(this.cbDuplicates_CheckedChanged);
             // 
+            // lblSettings
+            // 
+            this.lblSettings.AutoSize = true;
+            this.lblSettings.Font = new System.Drawing.Font("Georgia", 15F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblSettings.ForeColor = System.Drawing.Color.White;
+            this.lblSettings.Location = new System.Drawing.Point(49, 5);
+            this.lblSettings.Name = "lblSettings";
+            this.lblSettings.Size = new System.Drawing.Size(93, 24);
+            this.lblSettings.TabIndex = 89;
+            this.lblSettings.Text = "Settings";
+            // 
+            // pbLogo
+            // 
+            this.pbLogo.Image = global::Mastermind.Properties.Resources.Mastermind_ST;
+            this.pbLogo.Location = new System.Drawing.Point(-5, 140);
+            this.pbLogo.Name = "pbLogo";
+            this.pbLogo.Size = new System.Drawing.Size(196, 169);
+            this.pbLogo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pbLogo.TabIndex = 88;
+            this.pbLogo.TabStop = false;
+            // 
+            // panelDebug
+            // 
+            this.panelDebug.BackColor = System.Drawing.Color.Transparent;
+            this.panelDebug.Controls.Add(this.lblAnswer);
+            this.panelDebug.Controls.Add(this.tbDebug);
+            this.panelDebug.Controls.Add(this.btnDebugClear);
+            this.panelDebug.Location = new System.Drawing.Point(0, 405);
+            this.panelDebug.Name = "panelDebug";
+            this.panelDebug.Size = new System.Drawing.Size(519, 297);
+            this.panelDebug.TabIndex = 90;
+            this.panelDebug.Visible = false;
+            // 
             // pbSettings
             // 
             this.pbSettings.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
@@ -428,17 +441,6 @@ namespace Mastermind
             this.pbSettings.TabStop = false;
             this.pbSettings.Tag = "Hidden";
             this.pbSettings.Click += new System.EventHandler(this.pbSettings_Click);
-            this.pbSettings.MouseHover += new System.EventHandler(this.pbSettings_MouseHover);
-            // 
-            // pbLogo
-            // 
-            this.pbLogo.Image = global::Mastermind.Properties.Resources.Mastermind_ST;
-            this.pbLogo.Location = new System.Drawing.Point(-5, 140);
-            this.pbLogo.Name = "pbLogo";
-            this.pbLogo.Size = new System.Drawing.Size(196, 169);
-            this.pbLogo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.pbLogo.TabIndex = 88;
-            this.pbLogo.TabStop = false;
             // 
             // MastermindGame
             // 
@@ -464,7 +466,6 @@ namespace Mastermind
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MastermindGame";
             this.Text = "Mastermind";
-            this.Load += new System.EventHandler(this.Form1_Load);
             ((System.ComponentModel.ISupportInitialize)(this.nudCodeLength)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudAttempts)).EndInit();
             this.tlpColours.ResumeLayout(false);
@@ -473,10 +474,10 @@ namespace Mastermind
             this.tlpGuesses.PerformLayout();
             this.panelSettings.ResumeLayout(false);
             this.panelSettings.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pbLogo)).EndInit();
             this.panelDebug.ResumeLayout(false);
             this.panelDebug.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbSettings)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbLogo)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 

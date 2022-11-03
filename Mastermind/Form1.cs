@@ -13,16 +13,14 @@ namespace Mastermind
 {
     public partial class MastermindGame : Form
     {
-        // Is it a good idea to make these public? Certainly less of a headache.
+        // ### Is it a good idea to make these public? Certainly less of a headache.
         public List<string> colours;
         public int[] code;
         public List<PictureBox> pbGuesses;
         public int codeLength = 4;
-        public List<List<int>> guessHistory;
         public bool display;
         public int timeLeft;
         public bool infiniteAttempts;
-
         public bool allowDuplicates;
 
 
@@ -30,18 +28,18 @@ namespace Mastermind
         {
             InitializeComponent();
 
+            // Code that runs on start-up.
+
             this.Size = new Size(344, 456);
-
             colours = new List<string>(new string[] { "Red", "Orange", "Yellow", "Green", "Blue", "Purple" });
-
             allowDuplicates = true;
             infiniteAttempts = false;
+
             StartGame();
+            RefreshColourPalette();
 
-            RefreshColourPalette();//UpdateColours();
-            //GenerateCode(length:codeLength);
-
-            DebugModeOn();
+            // Uncomment to enable.
+            //DebugModeOn();
 
         }
 
@@ -72,7 +70,7 @@ namespace Mastermind
                     flpGuessHistory.Controls[i].Dispose();
                 }
             }
-            
+
 
 
             /*FlowLayoutPanel flpGuessHistory = new FlowLayoutPanel
@@ -102,15 +100,18 @@ namespace Mastermind
                 flpGuesses.Controls.Add(pbGuess);
 
                 pbGuesses.Add(pbGuess); // Storing each PictureBox in list to reference them.
-
             }
 
-            guessHistory = new List<List<int>>();
+            foreach (Button btnColour in flpColours.Controls)
+            {
+                btnColour.Enabled = true;
+            }
+
 
         }
 
         private int[] GenerateCode(int length = 4)
-        {
+        { // Generates a random code with values representing all the colours in the palette and of length codeLength.
             int n = colours.Count;
 
             tbDebug.Text += "<GEN>";
@@ -139,13 +140,13 @@ namespace Mastermind
             }
 
             if (display)
-            { DisplayCode();  }
+            { DisplayCode(); }
 
             return code; // Unnecessary, but may be needed later.
         }
 
-        private void DisplayCode() // Display likely won't be needed, so this is mostly for debugging/cheating.
-        {
+        private void DisplayCode()
+        { // Updates label with the generated code. Currently for debug purposes only.
             lblAnswer.Text = "";
             foreach (int digit in code)
             {
@@ -191,7 +192,7 @@ namespace Mastermind
         private void btnColour_Click(object sender, EventArgs e)
         { // Event triggered by selecting a colour.
             Button btnColour = sender as Button;
-            
+
             // ### Pick one!
             //UpdateGuess(Convert.ToInt32(btnColour.Name.Substring(9)));
             UpdateGuess(colours.IndexOf(btnColour.Tag.ToString()));
@@ -205,14 +206,13 @@ namespace Mastermind
             colour = colour.Substring(7, colour.Length - 8);*/
 
 
-            if (pbGuesses[codeLength-1].BackColor != Color.Transparent)
-            {
-                // Reset other slots
+            if (pbGuesses[codeLength - 1].BackColor != Color.Transparent)
+            { // Clears the previous guess from the slots upon the next function call.
                 ClearGuess();
             }
 
             foreach (PictureBox pbGuess in pbGuesses)
-            {
+            { // Iterates through all the guess slots until an empty one is found, updated and the loop is broken.
                 if (pbGuess.BackColor == Color.Transparent)
                 {
                     pbGuess.BackColor = Color.FromName(colours[pick]);
@@ -221,16 +221,15 @@ namespace Mastermind
                 }
             }
 
-            if (pbGuesses[codeLength-1].BackColor != Color.Transparent)
-            {
-                // Checks if last slot is filled. If it is, the guess is checked against the answer.
+            if (pbGuesses[codeLength - 1].BackColor != Color.Transparent)
+            { // Checks if the last slot is filled. If it is, the guess is checked against the answer.
                 if (CheckGuess())
                 { lblResult.Text = "Correct!"; }
                 else { lblResult.Text = "Incorrect!"; }
             }
         }
 
-        private bool CheckGuess()
+        private bool CheckGuess() // ### Separate into multiple functions?
         {
             tbDebug.Text += "<CHECK>\r";
             List<int> guess = new List<int>();
@@ -244,6 +243,7 @@ namespace Mastermind
             FlowLayoutPanel flpGuess = new FlowLayoutPanel
             {
                 AutoSize = true,
+                AutoSizeMode = AutoSizeMode.GrowAndShrink,
                 WrapContents = false,
                 Anchor = AnchorStyles.Top
 
@@ -276,9 +276,6 @@ namespace Mastermind
                 flpGuess.Controls.Add(pbSaveGuess);
             }
 
-
-            guessHistory.Add(guess); // Store guess (needed? 0000)
-
             int correctPositionAndColour = 0;
             int incorrectPositionButCorrectColour = 0;
 
@@ -306,7 +303,7 @@ namespace Mastermind
                         }
                     }
                 }
-                
+
             }
 
             // Updating hint text
@@ -320,7 +317,7 @@ namespace Mastermind
                 Size = new Size(15, 15),
                 Text = correctPositionAndColour.ToString()
             };
-            
+
             Label lblGuessHint2 = new Label
             {
                 BackColor = Color.White,
@@ -345,42 +342,24 @@ namespace Mastermind
                 if ((Convert.ToInt32(nudAttempts.Tag) > nudAttempts.Value) && !infiniteAttempts)
                 {
                     MessageBox.Show("Game over!");
+                    foreach (Button btnColour in flpColours.Controls)
+                    {
+                        btnColour.Enabled = false;
+                    }
                 }
                 else
                 {
                     lblAttemptsDisplay.Text = $"Attempt {nudAttempts.Tag}/{nudAttempts.Value}";
                 }
-                
+
                 return false;
             }
 
         }
 
-
-        private void UpdateColours() // Updates colour palette of pick buttons.
-        {
-            tbDebug.Text += "<UPDATECOLOURS>\r";
-            /*
-            var picks = this.Controls.OfType<Button>();
-            int count = 0;
-
-            foreach (Button pick in picks)
-            {
-                pick.BackColor = Color.FromName(colours[count]);
-                count++;
-            }*/
-
-            for (int count = 0; count < colours.Count; count++)
-            {
-                Controls.Find($"btnPick{count+1}", true)[0].BackColor = Color.FromName(colours[count]); 
-            }
-
-            ClearGuess();
-        }
-
         private void cbColourPicker_SelectedIndexChanged(object sender, EventArgs e)
         {
-            // Pull results in from collection.
+            // Handles changing colour palettes throughout the code.
             switch (cbColourPicker.Text)
             {
                 case "Default":
@@ -401,19 +380,20 @@ namespace Mastermind
                     InvertColours(true);
                     break;
 
-                case "Ten Colour Test":
+                case "Ten Colour Test": // ### Delete?
                     colours = new List<string>(new string[] { "Red", "Red", "Red", "Red", "Red", "Red", "Red", "Red", "Red", "Red" });
                     this.BackColor = Color.FromName("Pink");
                     InvertColours(false);
                     break;
-            } // ### Update CB values dynamically.
 
-            RefreshColourPalette();//UpdateColours();
+            } // ### Todo: Update CB values dynamically.
+
+            RefreshColourPalette();
             GenerateCode();
         }
 
         private void InvertColours(bool mode = true)
-        {
+        { // Fixes colours for readability.
             if (mode)
             {
                 lblResult.ForeColor = Color.White;
@@ -429,9 +409,8 @@ namespace Mastermind
 
         }
 
-
         private void ClearGuess()
-        {
+        { // Resets current displayed guess and associated labels.
             tbDebug.Text += "<CLEAR>\r";
             foreach (PictureBox pbGuess in pbGuesses)
             {
@@ -442,7 +421,7 @@ namespace Mastermind
             lblResult.Text = "";
             lblHint1.Text = "";
             lblHint2.Text = "";
-            
+
         }
         private void btnClear_Click(object sender, EventArgs e)
         {
@@ -453,19 +432,10 @@ namespace Mastermind
         {
             ClearGuess();
             StartGame();
-            //AlignControls();
-
-            
-
-        }
-
-        private void Form1_Load(object sender, EventArgs e)
-        {
-
         }
 
         private void nudCodeLength_ValueChanged(object sender, EventArgs e)
-        {
+        { // Settings: Change the length of the code generated.
             if (nudCodeLength.Value == 0)
             {
                 nudCodeLength.Value = 1; // Prevents a length of 0.
@@ -475,24 +445,18 @@ namespace Mastermind
                 nudCodeLength.Value = 10; // Prevents a length of above 10. ### May change this later to use a scrollbar.
                 MessageBox.Show("A code length greater than 10 is not currently available.");
             }
-            else 
+            else
             {
                 codeLength = Convert.ToInt32(nudCodeLength.Value);
                 tbDebug.Text += $"[LEN:{codeLength}]";
                 StartGame();
-                //AlignControls();
             }
 
-            
-        }
 
-        private void btnDebugClear_Click(object sender, EventArgs e)
-        {
-            tbDebug.Text = "";
         }
 
         private void cbDebug_CheckedChanged(object sender, EventArgs e)
-        {
+        { // Settings: Opens and closes debug panel.
             if (cbDebug.Checked)
             {
                 display = true;
@@ -507,66 +471,39 @@ namespace Mastermind
                 this.Size = new Size(535, 456);
             }
         }
+        private void btnDebugClear_Click(object sender, EventArgs e)
+        {
+            tbDebug.Text = "";
+        }
 
         private void pbSettings_Click(object sender, EventArgs e)
-        { // ### Put all settings into a panel, then iterate through in a loop.
+        { // Opens and closes settings panel.
             if (pbSettings.Tag.ToString() == "Hidden")
             {
                 pbSettings.Tag = "Shown";
-
                 panelSettings.Visible = true;
-                
-                /*
-                lblColourPalette.Visible = true;
-                cbColourPicker.Visible = true;
-                lblCodeLength.Visible = true;
-                nudCodeLength.Visible = true;
-                lblAttempts.Visible = true;
-                nudAttempts.Visible = true;
-                cbDebug.Visible = true;*/
 
                 this.Size = new Size(535, 456);
             }
             else
             {
                 pbSettings.Tag = "Hidden";
-
                 panelSettings.Visible = false;
-
-                /*
-                lblColourPalette.Visible = false;
-                cbColourPicker.Visible = false;
-                lblCodeLength.Visible = false;
-                nudCodeLength.Visible = false;
-                lblAttempts.Visible = false;
-                nudAttempts.Visible = false;
-                cbDebug.Visible = false;*/
 
                 cbDebug.Checked = false;
                 this.Size = new Size(344, 456);
             }
 
         }
-
-        
-
         private void DebugModeOn()
-        {
+        { // Call the function within the code for ease-of-access when debugging. (Not for end-user)
             display = true;
             infiniteAttempts = true;
             tbDebug.Text += "<DM>\r";
-            pbSettings.Tag = "Shown";
             cbDebug.Checked = true;
 
+            pbSettings.Tag = "Shown";
             panelSettings.Visible = true;
-            
-            /*lblColourPalette.Visible = true;
-            cbColourPicker.Visible = true;
-            lblCodeLength.Visible = true;
-            nudCodeLength.Visible = true;
-            lblAttempts.Visible = true;
-            nudAttempts.Visible = true;
-            cbDebug.Visible = true;*/
 
             this.Size = new Size(535, 743);
         }
@@ -576,9 +513,35 @@ namespace Mastermind
             lblAttemptsDisplay.Text = $"Attempt 1/{nudAttempts.Value}";
         }
 
+        private void cbDuplicates_CheckedChanged(object sender, EventArgs e)
+        { // Settings: Allow/Disallow duplicate colours within the combination code. 
+            if (codeLength >= colours.Count && !cbDuplicates.Checked)
+            {
+                MessageBox.Show("Code length is longer than the available amount of colours. Duplicates must be allowed.");
+                cbDuplicates.Checked = true;
+            }
+
+            else if (cbDuplicates.Checked)
+            {
+                allowDuplicates = true;
+                StartGame();
+            }
+
+            else
+            {
+                allowDuplicates = false;
+                StartGame();
+            }
+        }
+
+        private void btnHelp_Click(object sender, EventArgs e)
+        { // ### More design properties? Better help for my program specifically (settings, how to...etc)
+            MessageBox.Show("Mastermind is a game that involves guessing a given colour combination within a set amount of attempts. Each guess yields a hint on the number of correct colours – those with the correct position (and color) and those only with the correct colour.");
+        }
+
         private void lblTimer_Click(object sender, EventArgs e)
-        {
-            if(!timer.Enabled)
+        { // ### Not properly implemented.
+            if (!timer.Enabled)
             {
                 timer.Enabled = true;
                 timer.Start();
@@ -590,12 +553,8 @@ namespace Mastermind
                 timer.Stop();
                 timer.Enabled = false;
             }
-                
-                
-
 
         }
-
         private void timer_Tick(object sender, EventArgs e)
         { // ### Not properly implemented
             timeLeft--;
@@ -607,62 +566,23 @@ namespace Mastermind
                 timer.Enabled = false;
                 lblTimer.Text = "TIMER";
             }
-            
+
         }
 
-        private void pbSettings_MouseHover(object sender, EventArgs e)
+
+
+        // ### Delete or use later for background colour change.
+        /*if (pbSettings.Tag == "")
         {
-            // ### Delete or use later for background colour change.
-            /*if (pbSettings.Tag == "")
-            {
-                pbSettings.Image = new Bitmap(Mastermind.Properties.Resources.settingswhite);
-                pbSettings.Tag = "Hovered";
-            }
-            else
-            {
-                pbSettings.Image = new Bitmap(Mastermind.Properties.Resources.settings);
-                pbSettings.Tag = "";
-            }*/
-            
+            pbSettings.Image = new Bitmap(Mastermind.Properties.Resources.settingswhite);
+            pbSettings.Tag = "Hovered";
         }
-
-        private void btnHelp_Click(object sender, EventArgs e)
-        { // ### More design properties? Better help for my program specifically (settings, how to...etc)
-            MessageBox.Show("Mastermind is a game that involves guessing a given colour combination within a set amount of attempts. Each guess yields a hint on the number of correct colours – those with the correct position (and color) and those only with the correct colour.");
-        }
-
-        private void cbDuplicates_CheckedChanged(object sender, EventArgs e)
+        else
         {
-            if (codeLength >= colours.Count && !cbDuplicates.Checked)
-            {
-                MessageBox.Show("Code length is longer than the available amount of colours. Duplicates must be allowed.");
-                cbDuplicates.Checked = true;
-            }
+            pbSettings.Image = new Bitmap(Mastermind.Properties.Resources.settings);
+            pbSettings.Tag = "";
+        }*/
 
-            else  if (cbDuplicates.Checked)
-            {
-                allowDuplicates = true;
-                StartGame();
-            }
-
-            else
-            {
-                allowDuplicates = false;
-                StartGame();
-            }
-
-            
-        }
-
-        private void tlpGuesses_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
-        private void lblSeparator_Click(object sender, EventArgs e)
-        {
-
-        }
     }
 }
 
@@ -723,4 +643,25 @@ namespace Mastermind
 
             
         }
+
+        private void UpdateColours() // Updates colour palette of pick buttons.
+        {
+            tbDebug.Text += "<UPDATECOLOURS>\r";
+            
+            var picks = this.Controls.OfType<Button>();
+            int count = 0;
+
+            foreach (Button pick in picks)
+            {
+                pick.BackColor = Color.FromName(colours[count]);
+                count++;
+            }
+
+        for (int count = 0; count < colours.Count; count++)
+        {
+            Controls.Find($"btnPick{count + 1}", true)[0].BackColor = Color.FromName(colours[count]);
+        }
+
+        ClearGuess();
+                }
 */
